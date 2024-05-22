@@ -8,25 +8,71 @@ export default class Shopping extends Component {
     super(props);
     this.state = {
       inventory: [],
-      cart: []
+      filteredInventory: [],
+      cart: [],
+      currentInventoryPage: 0
     };
+    this.itemsPerPage = 5;
+    this.totalInventoryPages = 0;
   }
 
   async componentDidMount() {
     const inventoryData = await getInventory();
     const cartData = await getCart();
+    this.totalInventoryPages = Math.ceil(inventoryData.length / this.itemsPerPage);
+    const filteredInventoryData = inventoryData.slice(0, this.itemsPerPage);
+
     this.setState({
       inventory: inventoryData.map(item => { return {...item, amount: 0} }),
-      cart: cartData || []
+      cart: cartData || [],
+      filteredInventory: filteredInventoryData.map(item => { return {...item, amount: 0} })
     });
   }
 
-  handleUpdateAmount = (target, action) => {
+  handlePagination = (page, paginationFor="inventory") => {
+    if(paginationFor === "inventory") {
+      if(page >= 0 && page < this.totalInventoryPages) {
+        const start = page * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        this.setState({
+          filteredInventory: this.state.inventory.slice(start, end),
+          currentInventoryPage: page,
+        })
+      }
+      this.renderPageNumber(page);
+    }
+  }
+
+  renderPageNumber = (currentPage) => {
+    const currentId = `page-${currentPage}`;
+    const numberButtons = document.querySelectorAll(".pagination__pagenum");
+
+    numberButtons.forEach((button) => {
+      if (button.id === currentId) {
+        button.style.color = "red";
+      } else {
+        button.style.color = "black";
+      }
+    });
+
+    if (currentPage === this.totalInventoryPages - 1) {
+      document.querySelector(".pagination__btn-next").setAttribute("disabled", true);
+      document.querySelector(".pagination__btn-prev").removeAttribute("disabled");
+    } else if (currentPage === 0) {
+      document.querySelector(".pagination__btn-prev").setAttribute("disabled", true);
+      document.querySelector(".pagination__btn-next").removeAttribute("disabled");
+    } else {
+      document.querySelector(".pagination__btn-prev").removeAttribute("disabled");
+      document.querySelector(".pagination__btn-next").removeAttribute("disabled");
+    }
+  }
+
+  handleUpdateCart = (target, action) => {
     this.setState({
-      inventory: this.state.inventory.map((item) => {
-        return Number(item.id) == Number(target.id) ?
+      filteredInventory: this.state.filteredInventory.map((item) => {
+        return Number(item.id) === Number(target.id) ?
           action === "minus" ?
-            item.amount != 0 ?
+            item.amount !== 0 ?
               { ...item, amount: item.amount - 1 }
             : { ...item }
           : { ...item, amount: item.amount + 1 }
@@ -89,9 +135,12 @@ export default class Shopping extends Component {
     return (
       <div className="appContainer">
         <Inventory
-          inventory={this.state.inventory}
-          handleUpdateAmount={this.handleUpdateAmount}
+          filteredInventory={this.state.filteredInventory}
+          handlePagination={this.handlePagination}
+          handleUpdateCart={this.handleUpdateCart}
           handleAddToCart={this.handleAddToCart}
+          currentInventoryPage={this.state.currentInventoryPage}
+          totalInventoryPages={this.totalInventoryPages}
         />
         <Cart
           cart={this.state.cart}

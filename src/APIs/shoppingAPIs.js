@@ -1,11 +1,11 @@
 const URL = "http://localhost:3000";
 
-export const getCart = async () => {
-  return fetch(`${URL}/cart`).then((res) => res.json());
-};
-
 export const getInventory = async () => {
   return fetch(`${URL}/inventory`).then((res) => res.json());
+};
+
+export const getCart = async () => {
+  return fetch(`${URL}/cart`).then((res) => res.json());
 };
 
 export const addToCart = async (inventoryItem) => {
