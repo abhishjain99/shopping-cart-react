@@ -54,7 +54,7 @@ export default class Inventory extends Component {
             );
           })}
         </ul>
-        {/* <div className="pagination">
+        <div className="pagination">
           <button className="pagination__btn pagination__btn-prev">
             {" "}
             {`<`}{" "}
@@ -64,7 +64,7 @@ export default class Inventory extends Component {
             {" "}
             {`>`}{" "}
           </button>
-        </div> */}
+        </div>
       </div>
     );
   }

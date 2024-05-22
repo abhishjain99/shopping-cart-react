@@ -63,15 +63,42 @@ export default class Shopping extends Component {
     }
   }
 
+  handleDeleteFromCart = async (targetId) => {
+    try {
+      await deleteFromCart(targetId);
+      this.setState({
+        cart: this.state.cart.filter(item => targetId !== item.id)
+      })
+    } catch(err) {
+      alert("Failed to delete items from cart", err);
+    }
+  }
+
+  handleCheckout = async () => {
+    try {
+      await checkout();
+      this.setState({
+        cart: []
+      })
+    } catch(err) {
+      alert("Falied to checkout", err);
+    }
+  }
+
   render() {
-    console.log(this.state);
     return (
-    <div style={{margin: "10px"}}>
-      <Inventory
-        inventory={this.state.inventory}
-        handleUpdateAmount={this.handleUpdateAmount}
-        handleAddToCart={this.handleAddToCart} />
-      {/* <Cart /> */}
-    </div>
-  )}
+      <div className="appContainer">
+        <Inventory
+          inventory={this.state.inventory}
+          handleUpdateAmount={this.handleUpdateAmount}
+          handleAddToCart={this.handleAddToCart}
+        />
+        <Cart
+          cart={this.state.cart}
+          handleDeleteFromCart={this.handleDeleteFromCart}
+          handleCheckout={this.handleCheckout}
+        />
+      </div>
+    )
+  }
 }
