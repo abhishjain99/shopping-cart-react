@@ -4,6 +4,13 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+In `package.json`, update `scripts` with
+```
+"json:server": "json-server --watch ./db/db.json",
+"react:server": "PORT=3001 react-scripts start",
+"start": "npm run react:server & npm run json:server"
+```
+
 In the project directory, you can run:
 
 ### `npm start`
